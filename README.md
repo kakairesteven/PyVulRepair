@@ -13,5 +13,7 @@ In my experiment, I use two datasets i.e <a href='https://github.com/JafarAkhond
 Statement bugs respectively.
 
 ## To Replicate this work
-Do ...
+#### Environment Setup
+Install requirements using;
+`pip install -r requirements.txt`
 
