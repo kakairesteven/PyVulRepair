@@ -341,7 +341,9 @@ def main():
     args = parser.parse_args()
 
     # Setup CUDA, GPU
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device(
+        # "cuda:0" if torch.cuda.is_available() else 
+        "cpu")
     args.n_gpu = 1
     args.device = device
 

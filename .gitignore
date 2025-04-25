@@ -1,1 +1,2 @@
-/pyvulRepairVenv
+venv/
+/PyVulRepair/T5-Model/saved_models/
