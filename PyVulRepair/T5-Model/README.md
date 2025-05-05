@@ -1,25 +1,21 @@
-## Replicate VulRepair (M1 Model)
-
-To reproduce the results of our VulRepair (M1 model), run the following commands **(Inference only)**:
+To reproduce the results of our PyVulRepair **(Inference only)**:
 ```
-cd M1_VulRepair_PL-NL
-python vulrepair_main.py \
+python PyVulrepair \
     --output_dir=./saved_models \
     --model_name=model.bin \
-    --tokenizer_name=MickyMike/VulRepair \
-    --model_name_or_path=MickyMike/VulRepair \
+    --tokenizer_name=AfricaKing/PyVulRepair \
+    --model_name_or_path=AfricaKing/PyVulRepair \
     --do_test \
     --encoder_block_size 512 \
     --decoder_block_size 256 \
     --num_beams=50 \
     --eval_batch_size 1
 ```
-Note. please adjust the "num_beams" parameters accordingly to obtain the results we present in the discussion section. (i.e., num_beams= 1, 2, 3, 4, 5, 10)
+Note. please adjust the "num_beams" parameters (i.e., num_beams= 1, 2, 3, 4, 5, 10)
 
-To retrain the M1 model from scratch, run the following commands **(Training only)**:
+To retrain this model from scratch, run the following commands **(Training only)**:
 ```
-cd M1_VulRepair_PL-NL
-python vulrepair_main.py \
+python PyVulrepair.py \
     --model_name=model.bin \
     --output_dir=./saved_models \
     --tokenizer_name=Salesforce/codet5-base \
