@@ -47,16 +47,24 @@ class InputFeatures(object):
 class TextDataset(Dataset):
     def __init__(self, tokenizer, args, train_data=None, val_data=None, file_type="train"):
         if file_type == "train":
-            sources = train_data["source"].tolist()
-            labels = train_data["target"].tolist()
+
+            # Train dataset: Source
+            sources = train_data["before"].tolist()
+
+            # Train dataset: Target
+            labels = train_data["after"].tolist()
+            
         elif file_type == "eval":
-            sources = val_data["source"].tolist()
-            labels = val_data["target"].tolist()
+            sources = val_data["before"].tolist()
+            labels = val_data["after"].tolist()
+            
         elif file_type == "test":
-            data = datasets.load_dataset("MickyMike/cvefixes_bigvul", split="test")
-            sources = data["source"]
-            labels = data["target"]
+            # Read dataset as a test split
+            data = datasets.load_dataset('AfricaKing/TSSB-3M', split="test")
+            sources = data["before"]
+            labels = data["after"]
         self.examples = []
+        
         for i in tqdm(range(len(sources))):
             self.examples.append(convert_examples_to_features(sources[i], labels[i], tokenizer, args))
         if file_type == "train":
@@ -278,7 +286,7 @@ def test(args, model, tokenizer, test_dataset, best_threshold=0.5):
     df = pd.DataFrame({"raw_predictions": [], "correctly_predicted": []})
     df["raw_predictions"] = raw_predictions
     df["correctly_predicted"] = accuracy
-    df.to_csv("./raw_predictions/VulRepair_raw_preds.csv")
+    df.to_csv("./raw_predictions/PyVulRepair_raw_preds.csv")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -361,8 +369,9 @@ def main():
     logger.info("Training/evaluation parameters %s", args)
     # Training
     if args.do_train:
-        train_data_whole = datasets.load_dataset("MickyMike/cvefixes_bigvul", split="train")
-        df = pd.DataFrame({"source": train_data_whole["source"], "target": train_data_whole["target"]})
+        # Training the model on 3M TSSB bugs
+        train_data_whole = datasets.load_dataset("AfricaKing/TSSB-3M", split="train")
+        df = pd.DataFrame({"before": train_data_whole["before"], "after": train_data_whole["after"]})
         train_data, val_data = train_test_split(df, test_size=0.1238, random_state=42)
         train_dataset = TextDataset(tokenizer, args, train_data, val_data, file_type='train')
         eval_dataset = TextDataset(tokenizer, args, train_data, val_data, file_type='eval')
@@ -370,7 +379,7 @@ def main():
     # Evaluation
     results = {}  
     if args.do_test:
-        if args.model_name_or_path != "MickyMike/VulRepair":
+        if args.model_name_or_path != "AfricaKing/PyVulRepair":
             checkpoint_prefix = f'checkpoint-best-loss/{args.model_name}'
             output_dir = os.path.join(args.output_dir, '{}'.format(checkpoint_prefix))  
             model.load_state_dict(torch.load(output_dir, map_location=args.device))
