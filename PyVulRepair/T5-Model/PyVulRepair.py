@@ -45,7 +45,9 @@ class InputFeatures(object):
         
 
 class TextDataset(Dataset):
-    def __init__(self, tokenizer, args, train_data=None, val_data=None, file_type="train"):
+    def __init__(self, tokenizer, args, train_data=None,
+                 val_data=None,
+                 file_type="train"):
         if file_type == "train":
 
             # Train dataset: Source
@@ -348,9 +350,10 @@ def main():
 
     args = parser.parse_args()
 
-    # Setup CUDA, GPU
+    # Setup CUDA, GPU, CPU
+    torch.cuda.is_available = lambda : False
     device = torch.device(
-        # "cuda:0" if torch.cuda.is_available() else 
+        "cuda:0" if torch.cuda.is_available() else 
         "cpu")
     args.n_gpu = 0
     args.device = device
@@ -372,10 +375,17 @@ def main():
         # Training the model on 3M TSSB bugs
         train_data_whole = datasets.load_dataset("AfricaKing/TSSB-3M", split="train")
         df = pd.DataFrame({"before": train_data_whole["before"], "after": train_data_whole["after"]})
-        train_data, val_data = train_test_split(df, test_size=0.1238, random_state=42)
-        train_dataset = TextDataset(tokenizer, args, train_data, val_data, file_type='train')
-        eval_dataset = TextDataset(tokenizer, args, train_data, val_data, file_type='eval')
+
+        # Splitting the dataset
+        train_data, val_data = train_test_split(df, test_size=.30, random_state=42)
+        train_dataset = TextDataset(tokenizer, args, train_data,
+                                    val_data,
+                                    file_type='train')
+        eval_dataset = TextDataset(tokenizer, args, df,
+                                   val_data,
+                                   file_type='eval')
         train(args, train_dataset, model, tokenizer, eval_dataset)
+    
     # Evaluation
     results = {}  
     if args.do_test:
