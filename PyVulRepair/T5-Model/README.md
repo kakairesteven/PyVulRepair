@@ -1,6 +1,6 @@
 To reproduce the results of our PyVulRepair **(Inference only)**:
 ```
-python PyVulrepair \
+python PyVulRepair.py \
     --output_dir=./saved_models \
     --model_name=model.bin \
     --tokenizer_name=AfricaKing/PyVulRepair \
@@ -15,7 +15,7 @@ Note. please adjust the "num_beams" parameters (i.e., num_beams= 1, 2, 3, 4, 5, 
 
 To retrain this model from scratch, run the following commands **(Training only)**:
 ```
-python PyVulrepair.py \
+python PyVulRepair.py \
     --model_name=model.bin \
     --output_dir=./saved_models \
     --tokenizer_name=Salesforce/codet5-base \
